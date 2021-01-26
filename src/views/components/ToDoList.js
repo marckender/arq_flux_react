@@ -3,8 +3,27 @@ import ToDoItem from './ToDoItem';
 
 export default class ToDoList extends Component {
     static defaultProps = {
-        items: []
+        items: [],
+        onRemove: ()=> {},
+        onUpdate: ()=> {}
+
     }
+
+    constructor(props){
+        super(props);
+
+        this.remove = this.remove.bind(this)
+        this.update = this.update.bind(this)
+    }
+
+    update(item) {
+        this.props.onUpdate(item)
+    }
+
+    remove(id) {
+        this.props.onRemove(id)
+    }
+
     render() {
         const {props}= this;
 
@@ -14,7 +33,11 @@ export default class ToDoList extends Component {
         return (
             <ul className="todo-list">
                 {
-                    props.items.map(item => <ToDoItem  key={item.id} item = {item}/>)
+                    props.items.map(item => <ToDoItem
+                        onUpdate={this.update}
+                        onRemove= {this.remove}
+                        key={item.id} 
+                        item = {item}/>)
                 }
             </ul>
         )

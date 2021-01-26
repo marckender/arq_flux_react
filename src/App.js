@@ -12,6 +12,10 @@ export default class App extends Component {
     this.state = {
       todoList: []
     }
+
+    this.add = this.add.bind(this);
+    this.remove = this.remove.bind(this);
+    this.update = this.update.bind(this);
   }
 
   async componentDidMount() {
@@ -19,15 +23,48 @@ export default class App extends Component {
     this.setState({todoList})
   }
 
-  add(description)
+  add(description){
+    TodoService.create({
+      description,
+      isChecked: false
+    })
+    .then(newItem => {
+      const {todoList} = this.state;
+      todoList.push(newItem);
+      this.setState({todoList})
+    })
+  }
+
+  remove(id){
+    const {todoList} = this.state,
+    itemIndex = todoList.findIndex(item => item.id === id);
+    todoList.splice(itemIndex, 1);
+    TodoService.remove(id)
+    this.setState({todoList})
+  }
+
+  update(newItem){
+    const {todoList} = this.state,
+    itemIndex = todoList.findIndex(item => item.id === newItem.id);
+
+    todoList[itemIndex] = newItem;
+    TodoService.update(newItem);
+    this.setState({todoList})
+
+  }
+
   render() {
-const {state} = this;
+    const {state} = this;
 
     return (
       <div className="App">
-        <NewToDoItem  onAdd={description} />
+        <NewToDoItem  onAdd={this.add} />
         <hr />
-        <ToDoList items = {state.todoList} />
+        <ToDoList 
+          items = {state.todoList} 
+          onRemove = {this.remove}
+          onUpdate={this.update}
+        />
       </div>
     )
   }
